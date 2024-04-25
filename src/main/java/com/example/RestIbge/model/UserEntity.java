@@ -4,7 +4,7 @@ package com.example.RestIbge.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "noticias")
+@Document(collection = "notes")
 public class UserEntity {
 
     @Id

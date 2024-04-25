@@ -1,9 +1,6 @@
 package com.example.RestIbge.service;
 import com.example.RestIbge.model.UserEntity;
 import com.example.RestIbge.repository.UserRepository;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -33,24 +30,36 @@ public class UserService {
     }
 
     public void inserirDados(String dadosNoticia) {
-        try {
-            JSONArray jsonArray = new JSONArray(dadosNoticia);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObj = jsonArray.getJSONObject(i);
-                String noticiasRelease = jsonObj.getString("NoticiasRelease");
-                String tipoNoticias = jsonObj.getString("tipoNoticias");
-                String release = jsonObj.getString("release");
-                UserEntity noticia;
-                noticia = new UserEntity();
-                noticia.setNoticiasRelease(String.valueOf(noticia));
-                noticia.setTipodeNoticias(noticia.getTipodeNoticias());
-                noticia.setRelease(noticia.getRelease());
-                noticiasRepository.save(noticia);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        UserEntity ue = new UserEntity();
+        ue.setNoticiasRelease(dadosNoticia);
+        noticiasRepository.save(ue);
+
+    }
+
+    public String obterReleases() {
+        String dadosReleases = "";
+        String apiUrl = "https://servicodados.ibge.gov.br/api/v3/noticias/?tipo=release";
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(apiUrl, String.class);
+
+        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+            dadosReleases = responseEntity.getBody();
+        } else {
+            dadosReleases = "Falha ao obter dados. Código de status: " + responseEntity.getStatusCode();
         }
+        inserirDados(dadosReleases);
+        return dadosReleases;
+    }
+
+
+    public void inserir(String dadosReleases) {
+
+        UserEntity ui = new UserEntity();
+        ui.setNoticiasRelease(dadosReleases);
+        noticiasRepository.save(ui);
+
     }
     @Autowired
     private UserRepository userRepository;
